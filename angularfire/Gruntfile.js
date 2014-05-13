@@ -15,8 +15,16 @@ module.exports = function (grunt) {
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
+  grunt.loadNpmTasks('grunt-exec');
+
   // Define the configuration for all the tasks
   grunt.initConfig({
+
+    exec: {
+      firebaseDeploy: {
+        command: "firebase deploy"
+      }
+    },
 
     // Project settings
     yeoman: {
@@ -424,5 +432,10 @@ module.exports = function (grunt) {
     'newer:jshint',
     'test',
     'build'
+  ]);
+
+  grunt.registerTask('deploy', [
+    'build',
+    'exec:firebaseDeploy'
   ]);
 };
