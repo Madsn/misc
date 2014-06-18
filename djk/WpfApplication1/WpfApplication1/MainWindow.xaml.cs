@@ -25,7 +25,10 @@ namespace WpfApplication1
         public MainWindow()
         {
             InitializeComponent();
-            
+            connectionStringBox.Text = "server=Odin\\SQLEXPRESS;" +
+                "Trusted_Connection=yes;" +
+                "database=testdb; " +
+                "connection timeout=2";
             
         }
 
@@ -34,7 +37,8 @@ namespace WpfApplication1
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = cnn;
             cmd.CommandType = System.Data.CommandType.Text;
-            cmd.CommandText = "SELECT TOP 10 dbo.tbl_svm_call_events.fld_timestamp, dbo.tbl_svm_calls.fld_callerid, dbo.tbl_svm_consoles.fld_name AS AcdExt, " +                        "dbo.tbl_svm_users.fld_name AS Username " +
+            cmd.CommandText = "SELECT TOP 10 dbo.tbl_svm_call_events.fld_timestamp, dbo.tbl_svm_calls.fld_callerid, dbo.tbl_svm_consoles.fld_name AS AcdExt, " +                        
+                        "dbo.tbl_svm_users.fld_name AS Username " +
                         "FROM dbo.tbl_svm_call_events INNER JOIN " +
                         "dbo.tbl_svm_calls ON dbo.tbl_svm_call_events.fld_call = dbo.tbl_svm_calls.id INNER JOIN " +
                         "dbo.tbl_svm_consoles ON dbo.tbl_svm_call_events.fld_console = dbo.tbl_svm_consoles.guid INNER JOIN " +
@@ -49,20 +53,23 @@ namespace WpfApplication1
         {
             string connectionString = null;
             SqlConnection cnn;
-            connectionString = "server=Odin\\SQLEXPRESS;" +
+            connectionString = connectionStringBox.Text;
+                /*
+                 * "server=Odin\\SQLEXPRESS;" +
                 "Trusted_Connection=yes;" +
                 "database=testdb; " +
                 "connection timeout=30";
+                 * */
             cnn = new SqlConnection(connectionString);
             return cnn;
         }
 
         private void onButtonClick(object sender, RoutedEventArgs e)
         {
-            SqlConnection cnn = getSqlConn();
-            SqlCommand cmd = getQueryCommand(phoneInputBox.Text, cnn);
             try
             {
+                SqlConnection cnn = getSqlConn();
+                SqlCommand cmd = getQueryCommand(phoneInputBox.Text, cnn);
                 cnn.Open();
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -82,7 +89,8 @@ namespace WpfApplication1
             }
             catch (Exception ex)
             {
-                label1.Content = ex.Message;
+                dataGrid.Visibility = Visibility.Hidden;
+                textBlock.Text = ex.Message;
             }
         }
     }
