@@ -5,3 +5,6 @@ djk/djk-siptool/djk-siptool/obj/
 djk/djk-siptool/packages/
 djk/djk-siptool/djk-siptool/bin/
 djk/djk-siptool/djk-siptool/Content/themes/base/minified/
+_bin_deployableAssemblies/
+packages/
+djk/CRUDOperations/MvcAngular.Web/bin/
