@@ -8,9 +8,9 @@ namespace MvcAngular.Web.Repository
 {
     public class Row
     {
-        public DateTime Timestamp { get; set; }
-        public string CallerId { get; set; }
-        public string ConsoleName { get; set; }
-        public string EmployeeName { get; set; }
+        public DateTime Fld_Timestamp { get; set; }
+        public string Fld_CallerId { get; set; }
+        public string AcdExt { get; set; }
+        public string Username { get; set; }
     }
 }

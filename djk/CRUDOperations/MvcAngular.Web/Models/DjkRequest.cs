@@ -13,12 +13,14 @@ namespace MvcAngular.Web.Models
             PageIndex = 1;
             OrderBy = null;
             Descending = false;
+            CallerId = null;
         }
 
         public int PageSize { get; set; }
         public int PageIndex { get; set; }
         public string OrderBy { get; set; }
         public bool Descending { get; set; }
+        public string CallerId { get; set; }
 
         public void Validate()
         {

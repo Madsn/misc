@@ -15,6 +15,7 @@ namespace MvcAngular.Web.Models.Binders
             req.PageIndex = GetValue(req.PageIndex, bindingContext, "pageIndex", "page");
             req.OrderBy = GetValue(req.OrderBy, bindingContext, "orderBy", "sidx");
             req.Descending = GetValue("", bindingContext, "descending", "sord") == "desc";
+            req.CallerId = GetValue("", bindingContext, "callerId");
 
             bindingContext.Model = req;
             return true;

@@ -7,10 +7,13 @@
 <link rel="stylesheet" type="text/css" media="screen" href="@Url.Content("~/Content/jqgrid/ui.jqgrid.css")" />
 
 <div class="container">
-    
+    <script type="text/javascript">
+        $("#callerIdTextbox").on("change", getByCaller($("#callerIdTextbox").val()));
+    </script>
+    <input type="text" id="callerIdTextbox" />
     <div class="row-fluid">
         <div class="span12">
-            <h1>jQuery Grid Example</h1>
+            <h1>DJK Opslagstool</h1>
         </div>
     </div>
     

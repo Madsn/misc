@@ -17,7 +17,6 @@ namespace MvcAngular.Web.API
     public class QueryController : ApiController
     {
 
-        // GET api/values/45643123
         public DjkResponse Get([ModelBinder] DjkRequest model)
         {
             DjkResponse response = new DjkResponse();
@@ -35,10 +34,10 @@ namespace MvcAngular.Web.API
                         while(reader.Read())
                         {
                             Row row = new Row();
-                            row.Timestamp = reader.GetDateTime(0);
-                            row.CallerId = reader.GetString(1);
-                            row.ConsoleName = reader.GetString(2);
-                            row.EmployeeName = reader.GetString(3);
+                            row.Fld_Timestamp = reader.GetDateTime(0);
+                            row.Fld_CallerId = reader.GetString(1);
+                            row.AcdExt = reader.GetString(2);
+                            row.Username = reader.GetString(3);
                             response.Rows.Add(row);
                         }
 
@@ -91,7 +90,25 @@ namespace MvcAngular.Web.API
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = cnn;
             string sortorder = request.Descending ? "DESC" : "ASC";
-            string orderby = request.OrderBy; // SQL injection vulnerable
+            string orderby;
+            if (request.OrderBy.Equals("fld_timestamp"))
+            {
+                orderby = "dbo.tbl_svm_call_events.fld_timestamp";
+            }
+            else if (request.OrderBy.Equals("fld_callerid"))
+            {
+                orderby = "dbo.tbl_svm_calls.fld_callerid";
+            }
+            else if (request.OrderBy.Equals("AcdExt"))
+            {
+                orderby = "dbo.tbl_svm_consoles.fld_name";
+            }
+            else
+            {
+                orderby = "dbo.tbl_svm_users.fld_name";
+            }
+            //string orderby = request.OrderBy; // SQL injection vulnerable
+            
             string command = "SELECT dbo.tbl_svm_call_events.fld_timestamp, dbo.tbl_svm_calls.fld_callerid, dbo.tbl_svm_consoles.fld_name AS AcdExt, " +
                         "dbo.tbl_svm_users.fld_name AS Username " +
                         "FROM dbo.tbl_svm_call_events INNER JOIN " +
@@ -99,13 +116,14 @@ namespace MvcAngular.Web.API
                         "dbo.tbl_svm_consoles ON dbo.tbl_svm_call_events.fld_console = dbo.tbl_svm_consoles.guid INNER JOIN " +
                         "dbo.tbl_svm_users ON dbo.tbl_svm_call_events.fld_user = dbo.tbl_svm_users.guid " +
                 //            "WHERE dbo.tbl_svm_call_events.fld_event = '12' AND dbo.tbl_svm_calls.fld_callerid = @callerid " +
-                        "WHERE dbo.tbl_svm_call_events.fld_event = '12' " +
-                        "ORDER BY dbo.tbl_svm_call_events.@orderby @sortorder " +
+                        "WHERE dbo.tbl_svm_call_events.fld_event = '12' @callerid " +
+                        "ORDER BY @orderby @sortorder " +
                         "OFFSET @offset ROWS";
             string cmd1 = command.Replace("@sortorder", sortorder);
             string cmd2 = cmd1.Replace("@orderby", orderby);
+            string cmd3 = request.CallerId.Length > 1 ? cmd2.Replace("@callerid", String.Concat("AND dbo.tbl_svm_calls.fld_callerid = ", request.CallerId)) : cmd2.Replace("@callerid", "");
             cmd.CommandType = System.Data.CommandType.Text;
-            cmd.CommandText = cmd2;
+            cmd.CommandText = cmd3;
             //cmd.Parameters.Add("@callerid", System.Data.SqlDbType.VarChar, 20).Value = callerid;
             cmd.Parameters.Add("@offset", System.Data.SqlDbType.Int).Value = (request.PageIndex - 1) * request.PageSize;
             return cmd;
