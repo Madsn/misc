@@ -51,3 +51,4 @@ D:\repo\misc\djk\CRUDOperations\MvcAngular.Web\bin\System.Web.WebPages.Deploymen
 D:\repo\misc\djk\CRUDOperations\MvcAngular.Web\bin\System.Web.WebPages.Razor.xml
 D:\repo\misc\djk\CRUDOperations\MvcAngular.Web\obj\Debug\MvcAngular.Web.dll
 D:\repo\misc\djk\CRUDOperations\MvcAngular.Web\obj\Debug\MvcAngular.Web.pdb
+D:\repo\misc\djk\CRUDOperations\MvcAngular.Web\obj\Debug\MvcAngular.Web.csprojResolveAssemblyReference.cache

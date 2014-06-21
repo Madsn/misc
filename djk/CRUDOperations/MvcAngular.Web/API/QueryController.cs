@@ -10,38 +10,57 @@ using MvcAngular.Web.Models.Binders;
 using MvcAngular.Web.Repository;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace MvcAngular.Web.API
 {
     public class QueryController : ApiController
     {
+
         // GET api/values/45643123
-        public HttpResponseMessage Get(String id)
+        public DjkResponse Get([ModelBinder] DjkRequest model)
         {
-            HttpResponseMessage response;
+            DjkResponse response = new DjkResponse();
+            model = model ?? new DjkRequest();
             try
             {
                 SqlConnection cnn = getSqlConn();
-                SqlCommand cmd = getQueryCommand(id, cnn);
+                SqlCommand cmd = getQueryCommand(model, cnn);
                 cnn.Open();
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.HasRows)
                     {
-                        var r = Serialize(reader);
-                        string json = JsonConvert.SerializeObject(r, Formatting.Indented);
-                        response = Request.CreateResponse(HttpStatusCode.OK, json);
+                        response.Rows = new List<Row>();
+                        while(reader.Read())
+                        {
+                            Row row = new Row();
+                            row.Timestamp = reader.GetDateTime(0);
+                            row.CallerId = reader.GetString(1);
+                            row.ConsoleName = reader.GetString(2);
+                            row.EmployeeName = reader.GetString(3);
+                            response.Rows.Add(row);
+                        }
+
+                        
+                        response.Page = model.PageIndex;
+                        response.Records = ((model.PageIndex -1) * model.PageSize) + response.Rows.Count;
+                        response.Total = response.Records / model.PageSize + 1; // total pages
                     }
                     else
                     {
-                        response = Request.CreateResponse(HttpStatusCode.NotFound, "Not found");
+                        HttpResponseMessage notFound = new HttpResponseMessage();
+                        notFound.StatusCode = HttpStatusCode.NotFound;
+                        notFound.Content = new StringContent("Not found", Encoding.UTF8, "text/html");
                     }
                 }
                 cnn.Close();
             }
             catch (Exception ex)
             {
-                response = Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message.ToString());
+                HttpResponseMessage internalError = new HttpResponseMessage();
+                internalError.StatusCode = HttpStatusCode.InternalServerError;
+                internalError.Content = new StringContent(ex.Message.ToString(), Encoding.UTF8, "text/html");
             }
             return response;
         }
@@ -67,20 +86,28 @@ namespace MvcAngular.Web.API
             return result;
         }
 
-        private SqlCommand getQueryCommand(String callerId, SqlConnection cnn)
+        private SqlCommand getQueryCommand(DjkRequest request, SqlConnection cnn)
         {
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = cnn;
-            cmd.CommandType = System.Data.CommandType.Text;
-            cmd.CommandText = "SELECT TOP 10 dbo.tbl_svm_call_events.fld_timestamp, dbo.tbl_svm_calls.fld_callerid, dbo.tbl_svm_consoles.fld_name AS AcdExt, " +
+            string sortorder = request.Descending ? "DESC" : "ASC";
+            string orderby = request.OrderBy; // SQL injection vulnerable
+            string command = "SELECT dbo.tbl_svm_call_events.fld_timestamp, dbo.tbl_svm_calls.fld_callerid, dbo.tbl_svm_consoles.fld_name AS AcdExt, " +
                         "dbo.tbl_svm_users.fld_name AS Username " +
                         "FROM dbo.tbl_svm_call_events INNER JOIN " +
                         "dbo.tbl_svm_calls ON dbo.tbl_svm_call_events.fld_call = dbo.tbl_svm_calls.id INNER JOIN " +
                         "dbo.tbl_svm_consoles ON dbo.tbl_svm_call_events.fld_console = dbo.tbl_svm_consoles.guid INNER JOIN " +
                         "dbo.tbl_svm_users ON dbo.tbl_svm_call_events.fld_user = dbo.tbl_svm_users.guid " +
-                        "WHERE dbo.tbl_svm_call_events.fld_event = '12' AND dbo.tbl_svm_calls.fld_callerid = @callerid " +
-                        "ORDER BY dbo.tbl_svm_call_events.fld_timestamp DESC";
-            cmd.Parameters.Add("@callerid", System.Data.SqlDbType.VarChar, 20).Value = callerId;
+                //            "WHERE dbo.tbl_svm_call_events.fld_event = '12' AND dbo.tbl_svm_calls.fld_callerid = @callerid " +
+                        "WHERE dbo.tbl_svm_call_events.fld_event = '12' " +
+                        "ORDER BY dbo.tbl_svm_call_events.@orderby @sortorder " +
+                        "OFFSET @offset ROWS";
+            string cmd1 = command.Replace("@sortorder", sortorder);
+            string cmd2 = cmd1.Replace("@orderby", orderby);
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = cmd2;
+            //cmd.Parameters.Add("@callerid", System.Data.SqlDbType.VarChar, 20).Value = callerid;
+            cmd.Parameters.Add("@offset", System.Data.SqlDbType.Int).Value = (request.PageIndex - 1) * request.PageSize;
             return cmd;
         }
 

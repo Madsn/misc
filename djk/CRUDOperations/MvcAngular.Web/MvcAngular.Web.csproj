@@ -145,17 +145,21 @@
       <DependentUpon>201303032041565_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Binders\CustomModelBinderProvider.cs" />
     <Compile Include="Models\Binders\PeopleRequestBinder.cs" />
+    <Compile Include="Models\Binders\CustomModelBinderProvider.cs" />
+    <Compile Include="Models\Binders\DjkRequestBinder.cs" />
+    <Compile Include="Models\DjkRequest.cs" />
+    <Compile Include="Models\DjkResponse.cs" />
     <Compile Include="Models\PeopleResponse.cs" />
     <Compile Include="Models\PeopleRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Person.cs" />
     <Compile Include="Repository\ExampleDataRepository.cs" />
     <Compile Include="Repository\PostalAddress.cs" />
     <Compile Include="Repository\EmailAddress.cs" />
     <Compile Include="Repository\PhoneNumber.cs" />
     <Compile Include="Repository\ExampleDbContext.cs" />
-    <Compile Include="Repository\Person.cs" />
+    <Compile Include="Repository\Row.cs" />
     <Compile Include="Repository\SeedData.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -365,6 +369,7 @@
     <Content Include="Scripts\angular\i18n\angular-locale_zh-hk.js" />
     <Content Include="Scripts\angular\i18n\angular-locale_zh-tw.js" />
     <Content Include="Scripts\angular\i18n\angular-locale_zh.js" />
+    <Content Include="Scripts\app\examples\djkGridExample.js" />
     <Content Include="Scripts\app\examples\jqGridExample.js" />
     <Content Include="Scripts\app\examples\validationUsingJQuery.js" />
     <Content Include="Scripts\app\home\addressFilter.js" />
@@ -469,6 +474,7 @@
     <Content Include="Views\Examples\JQGrid.cshtml" />
     <Content Include="Views\Home\Grid1.cshtml" />
     <Content Include="Views\Home\Grid2.cshtml" />
+    <Content Include="Views\Examples\DJKGrid.cshtml" />
     <None Include="_bin_deployableAssemblies\x86\sqlcese40.dll" />
     <None Include="_bin_deployableAssemblies\x86\sqlceqp40.dll" />
     <None Include="_bin_deployableAssemblies\x86\sqlceme40.dll" />

@@ -17,5 +17,10 @@ namespace MvcAngular.Web.Controllers
         {
             return View();
         }
+
+        public ActionResult DJKGrid()
+        {
+            return View();
+        }
     }
 }

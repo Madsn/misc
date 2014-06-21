@@ -17,6 +17,10 @@ namespace MvcAngular.Web.Models.Binders
             {
                 return new PeopleRequestBinder();
             }
+            else if (modelType == typeof(DjkRequest))
+            {
+                return new DjkRequestBinder();
+            }
 
             return null;
         }
