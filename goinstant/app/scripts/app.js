@@ -16,9 +16,9 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ui.bootstrap'
-  ])
-  .config(function ($routeProvider) {
+    'ui.bootstrap',
+    'goangular'
+  ]).config(function ($routeProvider, $goConnectionProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -31,4 +31,5 @@ angular
       .otherwise({
         redirectTo: '/'
       });
+    $goConnectionProvider.$set('https://goinstant.net/a6f678bb341d/my-application');
   });
