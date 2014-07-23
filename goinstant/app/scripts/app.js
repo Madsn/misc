@@ -31,5 +31,5 @@ angular
       .otherwise({
         redirectTo: '/'
       });
-    $goConnectionProvider.$set('https://goinstant.net/a6f678bb341d/my-application');
+    $goConnectionProvider.$set('https://goinstant.net/madsn/my-application');
   });
